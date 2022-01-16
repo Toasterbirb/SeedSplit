@@ -41,4 +41,4 @@ utils.o: $(SRCDIR)/utils.cpp
 
 clean:
 	rm -rf build
-	rm *.o
+	rm -f *.o
