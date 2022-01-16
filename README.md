@@ -30,3 +30,10 @@ Tiuhti ja Viuhti
 Nuuskamuikkusen teltta
 Taikuri
 ```
+
+## Usage
+Just run the SeedSplit binary in the build directory. Give the name of the chosen split list as the first argument. For example, if you had a splitfile "taikurin_hattu.splits", you would run the program like this: `./SeedSplit taikurin_hattu`.
+
+To start the timer, hit Spacebar. Hitting spacebar again goes to the next split until there are no splits left.
+
+Resetting the timer etc. will probably be implemented in the future(tm)
