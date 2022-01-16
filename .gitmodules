@@ -1,0 +1,3 @@
+[submodule "Birb2D"]
+	path = Birb2D
+	url = git@github.com:toasterbirb/Birb2D
