@@ -2,12 +2,12 @@
 #include <unistd.h>
 #include <vector>
 #include <fstream>
-#include "Timer.hpp"
-#include "Logger.hpp"
-#include "Values.hpp"
-#include "Entity.hpp"
-#include "Timestep.hpp"
-#include "Renderwindow.hpp"
+#include <birb2d/Timer.hpp>
+#include <birb2d/Logger.hpp>
+#include <birb2d/Values.hpp>
+#include <birb2d/Entity.hpp>
+#include <birb2d/Timestep.hpp>
+#include <birb2d/Renderwindow.hpp>
 
 /* Boost */
 #include <boost/filesystem.hpp>
@@ -126,6 +126,10 @@ int main(int argc, char **argv)
 						for (int i = 0; i < splits.size(); i++)
 							splitTimeEntities[i].SetText("00:00");
 
+						/* Set color for the first split as selected */
+						splitNameEntities[0].SetColor(&Colors::Yellow); /* Reset color */
+						splitTimeEntities[0].SetColor(&Colors::Yellow); /* Reset color */
+
 						timer.Start();
 					}
 
@@ -142,7 +146,16 @@ int main(int argc, char **argv)
 						/* Update split time entity */
 						splitTimeEntities[currentSplit].SetText(splits[currentSplit].DigitalTime);
 
+						splitNameEntities[currentSplit].SetColor(&Colors::White); /* Reset color for split name */
+						splitTimeEntities[currentSplit].SetColor(&Colors::White); /* Reset color for split time */
+
 						currentSplit++;
+
+						if (currentSplit < splits.size())
+						{
+							splitNameEntities[currentSplit].SetColor(&Colors::Yellow); /* Change color for new selected split name */
+							splitTimeEntities[currentSplit].SetColor(&Colors::Yellow); /* Change color for new selected split time */
+						}
 
 						if (currentSplit >= splits.size())
 							timer.Stop();
@@ -157,6 +170,13 @@ int main(int argc, char **argv)
 
 		/* Update the main timer text */
 		e_totalTime.SetText(timer.DigitalFormat());
+
+		/* Update split times */
+		if (timer.running && currentSplit < splits.size())
+		{
+			splits[currentSplit].DigitalTime = timer.SplitDigitalFormat(splits[currentSplit - 1].mills);
+			splitTimeEntities[currentSplit].SetText(splits[currentSplit].DigitalTime);
+		}
 
 		/* Render stuff */
 		window.Clear();
