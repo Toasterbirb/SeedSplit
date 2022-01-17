@@ -4,13 +4,10 @@ Simple timer with splits, useful for speedrunning
 ![Screnshot](./screenshot.png)
 
 ## Installation (building)
-Just run the build.sh script. If you want to compile manually:
+You need to have [Birb2D](https://github.com/Toasterbirb/Birb2D) library installed.
+
 ```
-mkdir build
-cd build
-cmake ..
 make -j$(nproc)
-cp -r ../res ./
 ```
 
 ## Adding splits

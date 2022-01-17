@@ -171,6 +171,12 @@ int main(int argc, char **argv)
 		/* Update the main timer text */
 		e_totalTime.SetText(timer.DigitalFormat());
 
+		/* Update split time positions relative to window dimensions */
+		for (int i = 0; i < splits.size(); i++)
+		{
+			splitTimeEntities[i].rect.x = window.window_dimensions.x - 80;
+		}
+
 		/* Update split times */
 		if (timer.running && currentSplit < splits.size())
 		{
