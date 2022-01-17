@@ -7,6 +7,7 @@ Simple timer with splits, useful for speedrunning
 Just run the build.sh script. If you want to compile manually:
 ```
 mkdir build
+cd build
 cmake ..
 make -j$(nproc)
 cp ../res ./
