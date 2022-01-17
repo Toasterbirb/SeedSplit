@@ -10,7 +10,7 @@ mkdir build
 cd build
 cmake ..
 make -j$(nproc)
-cp ../res ./
+cp -r ../res ./
 ```
 
 ## Adding splits
