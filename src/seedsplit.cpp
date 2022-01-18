@@ -80,7 +80,7 @@ int main(int argc, char **argv)
 	for (int i = 0; i < splits.size(); i++)
 		std::cout << splits[i].Name << std::endl;
 
-	Birb::Window window("SeedSplit", Birb::Vector2int(400, 512), 240);
+	Birb::Window window("SeedSplit", Birb::Vector2int(400, 512), 240, true);
 	Birb::TimeStep timeStep;
 
 	/* Initialize timestep */
