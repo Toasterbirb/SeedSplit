@@ -80,29 +80,29 @@ int main(int argc, char **argv)
 	for (int i = 0; i < splits.size(); i++)
 		std::cout << splits[i].Name << std::endl;
 
-	Birb2D::Window window("SeedSplit", Vector2int(400, 512), 240);
-	Birb2D::TimeStep timeStep;
+	Birb::Window window("SeedSplit", Birb::Vector2int(400, 512), 240);
+	Birb::TimeStep timeStep;
 
 	/* Initialize timestep */
 	timeStep.Init();
 
 	/* Resource variables */
-	TTF_Font* mainFont = Birb2D::Resources::LoadFont("./res/fonts/manaspace/manaspc.ttf", 32);
-	TTF_Font* splitFont = Birb2D::Resources::LoadFont("./res/fonts/manaspace/manaspc.ttf", 20);
+	TTF_Font* mainFont = Birb::Resources::LoadFont("./res/fonts/manaspace/manaspc.ttf", 32);
+	TTF_Font* splitFont = Birb::Resources::LoadFont("./res/fonts/manaspace/manaspc.ttf", 20);
 
 	/* Gameloop variables */
 	SDL_Event event;
-	Birb2D::Entity e_totalTime("Total time", Vector2int(10, 10), Birb2D::TextComponent("00:00:000", mainFont, &Colors::White));
-	Birb2D::Timer timer;
+	Birb::Entity e_totalTime("Total time", Birb::Vector2int(10, 10), Birb::TextComponent("00:00:000", mainFont, &Birb::Colors::White));
+	Birb::Timer timer;
 	int currentSplit = 0;
 
 	/* Initialize split entities */
-	std::vector<Birb2D::Entity> splitNameEntities;
-	std::vector<Birb2D::Entity> splitTimeEntities;
+	std::vector<Birb::Entity> splitNameEntities;
+	std::vector<Birb::Entity> splitTimeEntities;
 	for (int i = 0; i < splits.size(); i++)
 	{
-		splitNameEntities.push_back(Birb2D::Entity("Split name", Vector2int(10, 50 + (i * 24)), Birb2D::TextComponent(splits[i].Name, splitFont, &Colors::White)));
-		splitTimeEntities.push_back(Birb2D::Entity("Split time", Vector2int(window.window_dimensions.x - 80, 50 + (i * 24)), Birb2D::TextComponent(splits[i].DigitalTime, splitFont, &Colors::White)));
+		splitNameEntities.push_back(Birb::Entity("Split name", Birb::Vector2int(10, 50 + (i * 24)), Birb::TextComponent(splits[i].Name, splitFont, &Birb::Colors::White)));
+		splitTimeEntities.push_back(Birb::Entity("Split time", Birb::Vector2int(window.window_dimensions.x - 80, 50 + (i * 24)), Birb::TextComponent(splits[i].DigitalTime, splitFont, &Birb::Colors::White)));
 	}
 
 	while (GameRunning)
@@ -127,8 +127,8 @@ int main(int argc, char **argv)
 							splitTimeEntities[i].SetText("00:00");
 
 						/* Set color for the first split as selected */
-						splitNameEntities[0].SetColor(&Colors::Yellow); /* Reset color */
-						splitTimeEntities[0].SetColor(&Colors::Yellow); /* Reset color */
+						splitNameEntities[0].SetColor(&Birb::Colors::Yellow); /* Reset color */
+						splitTimeEntities[0].SetColor(&Birb::Colors::Yellow); /* Reset color */
 
 						timer.Start();
 					}
@@ -146,15 +146,15 @@ int main(int argc, char **argv)
 						/* Update split time entity */
 						splitTimeEntities[currentSplit].SetText(splits[currentSplit].DigitalTime);
 
-						splitNameEntities[currentSplit].SetColor(&Colors::White); /* Reset color for split name */
-						splitTimeEntities[currentSplit].SetColor(&Colors::White); /* Reset color for split time */
+						splitNameEntities[currentSplit].SetColor(&Birb::Colors::White); /* Reset color for split name */
+						splitTimeEntities[currentSplit].SetColor(&Birb::Colors::White); /* Reset color for split time */
 
 						currentSplit++;
 
 						if (currentSplit < splits.size())
 						{
-							splitNameEntities[currentSplit].SetColor(&Colors::Yellow); /* Change color for new selected split name */
-							splitTimeEntities[currentSplit].SetColor(&Colors::Yellow); /* Change color for new selected split time */
+							splitNameEntities[currentSplit].SetColor(&Birb::Colors::Yellow); /* Change color for new selected split name */
+							splitTimeEntities[currentSplit].SetColor(&Birb::Colors::Yellow); /* Change color for new selected split time */
 						}
 
 						if (currentSplit >= splits.size())
@@ -188,16 +188,16 @@ int main(int argc, char **argv)
 		window.Clear();
 		{
 			/* Draw the timer */
-			Birb2D::Render::DrawEntity(e_totalTime);
+			Birb::Render::DrawEntity(e_totalTime);
 
 			/* Draw the divider line between main timer and splits */
-			Birb2D::Render::DrawRect(Colors::White, Rect(10, 40, window.window_dimensions.x - 20, 2));
+			Birb::Render::DrawRect(Birb::Colors::White, Birb::Rect(10, 40, window.window_dimensions.x - 20, 2));
 
 			/* Draw splits */
 			for (int i = 0; i < splits.size(); i++)
 			{
-				Birb2D::Render::DrawEntity(splitNameEntities[i]);
-				Birb2D::Render::DrawEntity(splitTimeEntities[i]);
+				Birb::Render::DrawEntity(splitNameEntities[i]);
+				Birb::Render::DrawEntity(splitTimeEntities[i]);
 			}
 		}
 		window.Display();
@@ -205,9 +205,9 @@ int main(int argc, char **argv)
 	}
 	timer.Stop();
 
-	Debug::Log("Starting cleanup...");
+	Birb::Debug::Log("Starting cleanup...");
 	window.Cleanup();
 	SDL_Quit();
-	Debug::Log("SeedSplit should be closed now!");
+	Birb::Debug::Log("SeedSplit should be closed now!");
 	return 0;
 }
