@@ -4,7 +4,7 @@ Simple timer with splits, useful for speedrunning
 ![Screnshot](./screenshot.png)
 
 ## Installation (building)
-You need to have [Birb2D](https://github.com/Toasterbirb/Birb2D) library installed.
+You need to have [Birb2D](https://github.com/Toasterbirb/Birb2D) library installed (version 0.1.0).
 
 ```
 make -j$(nproc)
