@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 	Birb::TimeStep timeStep;
 
 	/* Initialize timestep */
-	timeStep.Init();
+	timeStep.Init(&window);
 
 	/* Resource variables */
 	TTF_Font* mainFont = Birb::Resources::LoadFont("./res/fonts/manaspace/manaspc.ttf", 32);
@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 
 	/* Gameloop variables */
 	SDL_Event event;
-	Birb::Entity e_totalTime("Total time", Birb::Vector2int(10, 10), Birb::TextComponent("00:00:000", mainFont, &Birb::Colors::White));
+	Birb::Entity e_totalTime("Total time", Birb::Vector2int(10, 10), Birb::EntityComponent::TextComponent("00:00:000", mainFont, &Birb::Colors::White));
 	Birb::Timer timer;
 	int currentSplit = 0;
 
@@ -101,8 +101,8 @@ int main(int argc, char **argv)
 	std::vector<Birb::Entity> splitTimeEntities;
 	for (int i = 0; i < splits.size(); i++)
 	{
-		splitNameEntities.push_back(Birb::Entity("Split name", Birb::Vector2int(10, 50 + (i * 24)), Birb::TextComponent(splits[i].Name, splitFont, &Birb::Colors::White)));
-		splitTimeEntities.push_back(Birb::Entity("Split time", Birb::Vector2int(window.window_dimensions.x - 80, 50 + (i * 24)), Birb::TextComponent(splits[i].DigitalTime, splitFont, &Birb::Colors::White)));
+		splitNameEntities.push_back(Birb::Entity("Split name", Birb::Vector2int(10, 50 + (i * 24)), Birb::EntityComponent::TextComponent(splits[i].Name, splitFont, &Birb::Colors::White)));
+		splitTimeEntities.push_back(Birb::Entity("Split time", Birb::Vector2int(window.window_dimensions.x - 80, 50 + (i * 24)), Birb::EntityComponent::TextComponent(splits[i].DigitalTime, splitFont, &Birb::Colors::White)));
 	}
 
 	while (GameRunning)
