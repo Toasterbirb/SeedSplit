@@ -8,7 +8,7 @@ all: seedsplit
 seedsplit: seedsplit.o
 	mkdir -p build
 	rsync -av ./res ./build/
-	$(CC) $^ $(SDL_FLAGS) -lboost_filesystem -lbirb2d $(WarningFlags) -o $(outputDir)/SeedSplit
+	$(CC) $^ -lboost_filesystem -lbirb2d $(SDL_FLAGS) $(WarningFlags) -o $(outputDir)/SeedSplit
 
 run_seedsplit: seedsplit
 	cd build ; ./SeedSplit taikurin_hattu
