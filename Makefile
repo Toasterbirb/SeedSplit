@@ -14,7 +14,7 @@ run_seedsplit: seedsplit
 	cd build ; ./SeedSplit taikurin_hattu
 
 seedsplit.o: ./src/seedsplit.cpp
-	$(CC) -O3 -c $^ -o seedsplit.o
+	$(CC) -O3 -c -I./include $^ -o seedsplit.o
 
 clean:
 	rm -rf build

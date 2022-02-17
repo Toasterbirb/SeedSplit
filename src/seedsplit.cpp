@@ -10,6 +10,9 @@
 #include <birb2d/Renderwindow.hpp>
 #include <birb2d/Filesystem.hpp>
 
+/* External libraries */
+#include "inipp.h"
+
 bool GameRunning = true;
 
 struct Split
@@ -23,8 +26,58 @@ std::string datapath;
 std::vector<Split> splits;
 bool splitsEnabled;
 
+/* Configurations */
+std::string fontPath = "./res/fonts/manaspace/manaspc.ttf";
+int timerSize = 32;
+int splitSize = 20;
+int splitSpacing = 0;
+SDL_Color currentSplitColor = Birb::Colors::Yellow;
+
 int main(int argc, char **argv)
 {
+	datapath = (std::string)getenv("HOME") + "/.local/share/SeedSplit";
+
+	/* Read the configuration file */
+	inipp::Ini<char> ini;
+	std::ifstream configfile(datapath + "/config.ini");
+	ini.parse(configfile);
+	std::cout << "Config:" << std::endl;
+	ini.interpolate();
+	ini.generate(std::cout);
+	inipp::get_value(ini.sections["Theme"], "Font", fontPath);
+	inipp::get_value(ini.sections["Theme"], "TimerSize", timerSize);
+	inipp::get_value(ini.sections["Theme"], "SplitSize", splitSize);
+	inipp::get_value(ini.sections["Theme"], "SplitSpacing", splitSpacing);
+
+	{
+		int colorR = -1;
+		int colorG = -1;
+		int colorB = -1;
+		inipp::get_value(ini.sections["Theme"], "CurrentSplitR", colorR);
+		inipp::get_value(ini.sections["Theme"], "CurrentSplitG", colorG);
+		inipp::get_value(ini.sections["Theme"], "CurrentSplitB", colorB);
+
+		if (colorR != -1 || colorG != -1 || colorB != -1)
+		{
+			if (colorR == -1)
+				colorR = 0;
+
+			if (colorG == -1)
+				colorG = 0;
+
+			if (colorB == -1)
+				colorB = 0;
+
+			currentSplitColor.r = colorR;
+			currentSplitColor.g = colorG;
+			currentSplitColor.b = colorB;
+		}
+	}
+
+	std::cout << "Split r: " << std::to_string(currentSplitColor.r) << std::endl;
+	std::cout << "Split g: " << std::to_string(currentSplitColor.g) << std::endl;
+	std::cout << "Split b: " << std::to_string(currentSplitColor.b) << std::endl;
+
 	/* Check if there were enough args */
 	if (argc < 2)
 	{
@@ -36,7 +89,6 @@ int main(int argc, char **argv)
 		splitsEnabled = true;
 
 		/* Get data path */
-		datapath = (std::string)getenv("HOME") + "/.local/share/SeedSplit";
 		std::cout << "Data path: " << datapath << std::endl;
 		if (Birb::Filesystem::Directory::Exists(datapath))
 		{
@@ -47,7 +99,6 @@ int main(int argc, char **argv)
 			std::cout << "Creating a new datadir" << std::endl;
 			Birb::Filesystem::Directory::Create(datapath);
 		}
-
 
 		/* Check for selected splitfile */
 		std::string splitFilePath = datapath + "/" + argv[1] + ".splits";
@@ -93,8 +144,8 @@ int main(int argc, char **argv)
 	timeStep.Init(&window);
 
 	/* Resource variables */
-	TTF_Font* mainFont = Birb::Resources::LoadFont("./res/fonts/manaspace/manaspc.ttf", 32);
-	TTF_Font* splitFont = Birb::Resources::LoadFont("./res/fonts/manaspace/manaspc.ttf", 20);
+	TTF_Font* mainFont = Birb::Resources::LoadFont(fontPath, timerSize);
+	TTF_Font* splitFont = Birb::Resources::LoadFont(fontPath, splitSize);
 
 	/* Gameloop variables */
 	SDL_Event event;
@@ -110,8 +161,8 @@ int main(int argc, char **argv)
 	{
 		for (int i = 0; i < splits.size(); i++)
 		{
-			splitNameEntities.push_back(Birb::Entity("Split name", Birb::Vector2int(10, 50 + (i * 24)), Birb::EntityComponent::TextComponent(splits[i].Name, splitFont, &Birb::Colors::White)));
-			splitTimeEntities.push_back(Birb::Entity("Split time", Birb::Vector2int(window.window_dimensions.x - 80, 50 + (i * 24)), Birb::EntityComponent::TextComponent(splits[i].DigitalTime, splitFont, &Birb::Colors::White)));
+			splitNameEntities.push_back(Birb::Entity("Split name", Birb::Vector2int(10, splitSize + timerSize + (i * (splitSize + splitSpacing))), Birb::EntityComponent::TextComponent(splits[i].Name, splitFont, &Birb::Colors::White)));
+			splitTimeEntities.push_back(Birb::Entity("Split time", Birb::Vector2int(window.window_dimensions.x - 60 - splitSize, splitSize + timerSize + (i * (splitSize + splitSpacing))), Birb::EntityComponent::TextComponent(splits[i].DigitalTime, splitFont, &Birb::Colors::White)));
 		}
 	}
 
@@ -139,8 +190,8 @@ int main(int argc, char **argv)
 								splitTimeEntities[i].SetText("00:00");
 
 							/* Set color for the first split as selected */
-							splitNameEntities[0].SetColor(&Birb::Colors::Yellow); /* Reset color */
-							splitTimeEntities[0].SetColor(&Birb::Colors::Yellow); /* Reset color */
+							splitNameEntities[0].SetColor(&currentSplitColor); /* Reset color */
+							splitTimeEntities[0].SetColor(&currentSplitColor); /* Reset color */
 						}
 
 						timer.Start();
@@ -168,8 +219,8 @@ int main(int argc, char **argv)
 
 							if (currentSplit < splits.size())
 							{
-								splitNameEntities[currentSplit].SetColor(&Birb::Colors::Yellow); /* Change color for new selected split name */
-								splitTimeEntities[currentSplit].SetColor(&Birb::Colors::Yellow); /* Change color for new selected split time */
+								splitNameEntities[currentSplit].SetColor(&currentSplitColor); /* Change color for new selected split name */
+								splitTimeEntities[currentSplit].SetColor(&currentSplitColor); /* Change color for new selected split time */
 							}
 						}
 
@@ -192,7 +243,7 @@ int main(int argc, char **argv)
 		{
 			for (int i = 0; i < splits.size(); i++)
 			{
-				splitTimeEntities[i].rect.x = window.window_dimensions.x - 80;
+				splitTimeEntities[i].rect.x = window.window_dimensions.x - 60 - splitSize;
 			}
 
 			/* Update split times */
@@ -212,7 +263,7 @@ int main(int argc, char **argv)
 			if (splitsEnabled)
 			{
 				/* Draw the divider line between main timer and splits */
-				Birb::Render::DrawRect(Birb::Colors::White, Birb::Rect(10, 40, window.window_dimensions.x - 20, 2));
+				Birb::Render::DrawRect(Birb::Colors::White, Birb::Rect(10, 12 + timerSize, window.window_dimensions.x - 20, 2));
 
 				/* Draw splits */
 				for (int i = 0; i < splits.size(); i++)
