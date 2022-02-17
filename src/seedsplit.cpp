@@ -8,9 +8,7 @@
 #include <birb2d/Entity.hpp>
 #include <birb2d/Timestep.hpp>
 #include <birb2d/Renderwindow.hpp>
-
-/* Boost */
-#include <boost/filesystem.hpp>
+#include <birb2d/Filesystem.hpp>
 
 bool GameRunning = true;
 
@@ -33,21 +31,21 @@ int main(int argc, char **argv)
 	/* Get data path */
 	datapath = (std::string)getenv("HOME") + "/.local/share/SeedSplit";
 	std::cout << "Data path: " << datapath << std::endl;
-	if (boost::filesystem::exists(datapath))
+	if (Birb::Filesystem::Directory::Exists(datapath))
 	{
 		std::cout << "Existing datadir found" << std::endl;
 	}
 	else
 	{
 		std::cout << "Creating a new datadir" << std::endl;
-		boost::filesystem::create_directories(datapath);
+		Birb::Filesystem::Directory::Create(datapath);
 	}
 
 
 	/* Check for selected splitfile */
 	std::string splitFilePath = datapath + "/" + argv[1] + ".splits";
 	std::cout << "Selected splits: " << argv[1] << std::endl;
-	if (boost::filesystem::exists(splitFilePath))
+	if (Birb::Filesystem::File::Exists(splitFilePath))
 	{
 		std::cout << "Splits were found!" << std::endl;
 
