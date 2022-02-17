@@ -235,8 +235,13 @@ int main(int argc, char **argv)
 
 		timeStep.End();
 
-		/* Update the main timer text */
-		e_totalTime.SetText(timer.DigitalFormat());
+		/* Update the main timer text when if the elapsed milliseconds is divisible by 5
+		 * this is to slow down the texture spamming a bit. Update the text though if the timer 
+		 * has been stopped */
+		if ((int)timer.ElapsedMilliseconds() % 4 == 0 || !timer.running)
+		{
+			e_totalTime.SetText(timer.DigitalFormat());
+		}
 
 		/* Update split time positions relative to window dimensions */
 		if (splitsEnabled)
