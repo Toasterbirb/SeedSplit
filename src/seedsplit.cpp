@@ -21,62 +21,70 @@ struct Split
 
 std::string datapath;
 std::vector<Split> splits;
+bool splitsEnabled;
 
 int main(int argc, char **argv)
 {
 	/* Check if there were enough args */
 	if (argc < 2)
-		return 1;
-
-	/* Get data path */
-	datapath = (std::string)getenv("HOME") + "/.local/share/SeedSplit";
-	std::cout << "Data path: " << datapath << std::endl;
-	if (Birb::Filesystem::Directory::Exists(datapath))
 	{
-		std::cout << "Existing datadir found" << std::endl;
+		splitsEnabled = false;
 	}
 	else
 	{
-		std::cout << "Creating a new datadir" << std::endl;
-		Birb::Filesystem::Directory::Create(datapath);
-	}
+		/* Load split stuff */
+		splitsEnabled = true;
 
-
-	/* Check for selected splitfile */
-	std::string splitFilePath = datapath + "/" + argv[1] + ".splits";
-	std::cout << "Selected splits: " << argv[1] << std::endl;
-	if (Birb::Filesystem::File::Exists(splitFilePath))
-	{
-		std::cout << "Splits were found!" << std::endl;
-
-		/* Load splits */
-		std::fstream splitFile;
-		splitFile.open(splitFilePath, std::ios::in);
-
-		/* Check if file was opened successfully and read the data */
-		std::string line;
-		if (splitFile.is_open())
+		/* Get data path */
+		datapath = (std::string)getenv("HOME") + "/.local/share/SeedSplit";
+		std::cout << "Data path: " << datapath << std::endl;
+		if (Birb::Filesystem::Directory::Exists(datapath))
 		{
-			while (std::getline(splitFile, line))
+			std::cout << "Existing datadir found" << std::endl;
+		}
+		else
+		{
+			std::cout << "Creating a new datadir" << std::endl;
+			Birb::Filesystem::Directory::Create(datapath);
+		}
+
+
+		/* Check for selected splitfile */
+		std::string splitFilePath = datapath + "/" + argv[1] + ".splits";
+		std::cout << "Selected splits: " << argv[1] << std::endl;
+		if (Birb::Filesystem::File::Exists(splitFilePath))
+		{
+			std::cout << "Splits were found!" << std::endl;
+
+			/* Load splits */
+			std::fstream splitFile;
+			splitFile.open(splitFilePath, std::ios::in);
+
+			/* Check if file was opened successfully and read the data */
+			std::string line;
+			if (splitFile.is_open())
 			{
-				Split newSplit;
-				newSplit.Name = line;
-				newSplit.DigitalTime = "00:00";
-				newSplit.mills = -1;
-				splits.push_back(newSplit);
+				while (std::getline(splitFile, line))
+				{
+					Split newSplit;
+					newSplit.Name = line;
+					newSplit.DigitalTime = "00:00";
+					newSplit.mills = -1;
+					splits.push_back(newSplit);
+				}
 			}
 		}
-	}
-	else
-	{
-		std::cout << "Could not find splits" << std::endl;
-		return 1;
-	}
+		else
+		{
+			std::cout << "Could not find splits" << std::endl;
+			return 1;
+		}
 
-	/* Print out all loaded splits */
-	std::cout << "Loaded splits:" << std::endl;
-	for (int i = 0; i < splits.size(); i++)
-		std::cout << splits[i].Name << std::endl;
+		/* Print out all loaded splits */
+		std::cout << "Loaded splits:" << std::endl;
+		for (int i = 0; i < splits.size(); i++)
+			std::cout << splits[i].Name << std::endl;
+	}
 
 	Birb::Window window("SeedSplit", Birb::Vector2int(400, 512), 240, true);
 	Birb::TimeStep timeStep;
@@ -97,10 +105,14 @@ int main(int argc, char **argv)
 	/* Initialize split entities */
 	std::vector<Birb::Entity> splitNameEntities;
 	std::vector<Birb::Entity> splitTimeEntities;
-	for (int i = 0; i < splits.size(); i++)
+
+	if (splitsEnabled)
 	{
-		splitNameEntities.push_back(Birb::Entity("Split name", Birb::Vector2int(10, 50 + (i * 24)), Birb::EntityComponent::TextComponent(splits[i].Name, splitFont, &Birb::Colors::White)));
-		splitTimeEntities.push_back(Birb::Entity("Split time", Birb::Vector2int(window.window_dimensions.x - 80, 50 + (i * 24)), Birb::EntityComponent::TextComponent(splits[i].DigitalTime, splitFont, &Birb::Colors::White)));
+		for (int i = 0; i < splits.size(); i++)
+		{
+			splitNameEntities.push_back(Birb::Entity("Split name", Birb::Vector2int(10, 50 + (i * 24)), Birb::EntityComponent::TextComponent(splits[i].Name, splitFont, &Birb::Colors::White)));
+			splitTimeEntities.push_back(Birb::Entity("Split time", Birb::Vector2int(window.window_dimensions.x - 80, 50 + (i * 24)), Birb::EntityComponent::TextComponent(splits[i].DigitalTime, splitFont, &Birb::Colors::White)));
+		}
 	}
 
 	while (GameRunning)
@@ -120,13 +132,16 @@ int main(int argc, char **argv)
 					if (!timer.running && event.key.keysym.scancode == 44)
 					{
 						/* Reset splits */
-						currentSplit = 0;
-						for (int i = 0; i < splits.size(); i++)
-							splitTimeEntities[i].SetText("00:00");
+						if (splitsEnabled)
+						{
+							currentSplit = 0;
+							for (int i = 0; i < splits.size(); i++)
+								splitTimeEntities[i].SetText("00:00");
 
-						/* Set color for the first split as selected */
-						splitNameEntities[0].SetColor(&Birb::Colors::Yellow); /* Reset color */
-						splitTimeEntities[0].SetColor(&Birb::Colors::Yellow); /* Reset color */
+							/* Set color for the first split as selected */
+							splitNameEntities[0].SetColor(&Birb::Colors::Yellow); /* Reset color */
+							splitTimeEntities[0].SetColor(&Birb::Colors::Yellow); /* Reset color */
+						}
 
 						timer.Start();
 					}
@@ -135,27 +150,30 @@ int main(int argc, char **argv)
 					else if (timer.running && event.key.keysym.scancode == 44)
 					{
 						/* Save split data */
-						splits[currentSplit].mills = timer.ElapsedMilliseconds();
-						if (currentSplit == 0)
-							splits[currentSplit].DigitalTime = timer.SplitDigitalFormat(0);
-						else
-							splits[currentSplit].DigitalTime = timer.SplitDigitalFormat(splits[currentSplit - 1].mills);
-
-						/* Update split time entity */
-						splitTimeEntities[currentSplit].SetText(splits[currentSplit].DigitalTime);
-
-						splitNameEntities[currentSplit].SetColor(&Birb::Colors::White); /* Reset color for split name */
-						splitTimeEntities[currentSplit].SetColor(&Birb::Colors::White); /* Reset color for split time */
-
-						currentSplit++;
-
-						if (currentSplit < splits.size())
+						if (splitsEnabled)
 						{
-							splitNameEntities[currentSplit].SetColor(&Birb::Colors::Yellow); /* Change color for new selected split name */
-							splitTimeEntities[currentSplit].SetColor(&Birb::Colors::Yellow); /* Change color for new selected split time */
+							splits[currentSplit].mills = timer.ElapsedMilliseconds();
+							if (currentSplit == 0)
+								splits[currentSplit].DigitalTime = timer.SplitDigitalFormat(0);
+							else
+								splits[currentSplit].DigitalTime = timer.SplitDigitalFormat(splits[currentSplit - 1].mills);
+
+							/* Update split time entity */
+							splitTimeEntities[currentSplit].SetText(splits[currentSplit].DigitalTime);
+
+							splitNameEntities[currentSplit].SetColor(&Birb::Colors::White); /* Reset color for split name */
+							splitTimeEntities[currentSplit].SetColor(&Birb::Colors::White); /* Reset color for split time */
+
+							currentSplit++;
+
+							if (currentSplit < splits.size())
+							{
+								splitNameEntities[currentSplit].SetColor(&Birb::Colors::Yellow); /* Change color for new selected split name */
+								splitTimeEntities[currentSplit].SetColor(&Birb::Colors::Yellow); /* Change color for new selected split time */
+							}
 						}
 
-						if (currentSplit >= splits.size())
+						if (!splitsEnabled || currentSplit >= splits.size())
 							timer.Stop();
 					}
 				}
@@ -170,16 +188,19 @@ int main(int argc, char **argv)
 		e_totalTime.SetText(timer.DigitalFormat());
 
 		/* Update split time positions relative to window dimensions */
-		for (int i = 0; i < splits.size(); i++)
+		if (splitsEnabled)
 		{
-			splitTimeEntities[i].rect.x = window.window_dimensions.x - 80;
-		}
+			for (int i = 0; i < splits.size(); i++)
+			{
+				splitTimeEntities[i].rect.x = window.window_dimensions.x - 80;
+			}
 
-		/* Update split times */
-		if (timer.running && currentSplit < splits.size())
-		{
-			splits[currentSplit].DigitalTime = timer.SplitDigitalFormat(splits[currentSplit - 1].mills);
-			splitTimeEntities[currentSplit].SetText(splits[currentSplit].DigitalTime);
+			/* Update split times */
+			if (timer.running && currentSplit < splits.size())
+			{
+				splits[currentSplit].DigitalTime = timer.SplitDigitalFormat(splits[currentSplit - 1].mills);
+				splitTimeEntities[currentSplit].SetText(splits[currentSplit].DigitalTime);
+			}
 		}
 
 		/* Render stuff */
@@ -188,14 +209,17 @@ int main(int argc, char **argv)
 			/* Draw the timer */
 			Birb::Render::DrawEntity(e_totalTime);
 
-			/* Draw the divider line between main timer and splits */
-			Birb::Render::DrawRect(Birb::Colors::White, Birb::Rect(10, 40, window.window_dimensions.x - 20, 2));
-
-			/* Draw splits */
-			for (int i = 0; i < splits.size(); i++)
+			if (splitsEnabled)
 			{
-				Birb::Render::DrawEntity(splitNameEntities[i]);
-				Birb::Render::DrawEntity(splitTimeEntities[i]);
+				/* Draw the divider line between main timer and splits */
+				Birb::Render::DrawRect(Birb::Colors::White, Birb::Rect(10, 40, window.window_dimensions.x - 20, 2));
+
+				/* Draw splits */
+				for (int i = 0; i < splits.size(); i++)
+				{
+					Birb::Render::DrawEntity(splitNameEntities[i]);
+					Birb::Render::DrawEntity(splitTimeEntities[i]);
+				}
 			}
 		}
 		window.Display();
@@ -205,7 +229,6 @@ int main(int argc, char **argv)
 
 	Birb::Debug::Log("Starting cleanup...");
 	window.Cleanup();
-	SDL_Quit();
 	Birb::Debug::Log("SeedSplit should be closed now!");
 	return 0;
 }
