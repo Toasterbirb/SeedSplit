@@ -149,7 +149,7 @@ int main(int argc, char **argv)
 
 	/* Gameloop variables */
 	SDL_Event event;
-	Birb::Entity e_totalTime("Total time", Birb::Vector2int(10, 10), Birb::EntityComponent::TextComponent("00:00:000", mainFont, &Birb::Colors::White));
+	Birb::Entity e_totalTime("Total time", Birb::Vector2int(10, 10), Birb::EntityComponent::Text("00:00:000", mainFont, &Birb::Colors::White));
 	Birb::Timer timer;
 	int currentSplit = 0;
 
@@ -161,8 +161,8 @@ int main(int argc, char **argv)
 	{
 		for (int i = 0; i < splits.size(); i++)
 		{
-			splitNameEntities.push_back(Birb::Entity("Split name", Birb::Vector2int(10, splitSize + timerSize + (i * (splitSize + splitSpacing))), Birb::EntityComponent::TextComponent(splits[i].Name, splitFont, &Birb::Colors::White)));
-			splitTimeEntities.push_back(Birb::Entity("Split time", Birb::Vector2int(window.window_dimensions.x - 60 - splitSize, splitSize + timerSize + (i * (splitSize + splitSpacing))), Birb::EntityComponent::TextComponent(splits[i].DigitalTime, splitFont, &Birb::Colors::White)));
+			splitNameEntities.push_back(Birb::Entity("Split name", Birb::Vector2int(10, splitSize + timerSize + (i * (splitSize + splitSpacing))), Birb::EntityComponent::Text(splits[i].Name, splitFont, &Birb::Colors::White)));
+			splitTimeEntities.push_back(Birb::Entity("Split time", Birb::Vector2int(window.window_dimensions.x - 60 - splitSize, splitSize + timerSize + (i * (splitSize + splitSpacing))), Birb::EntityComponent::Text(splits[i].DigitalTime, splitFont, &Birb::Colors::White)));
 		}
 	}
 
