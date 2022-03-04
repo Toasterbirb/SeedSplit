@@ -18,9 +18,9 @@ To start the timer, hit Spacebar. Hitting spacebar again goes to the next split 
 Resetting the timer etc. will probably be implemented in the future(tm)
 
 ## Adding splits
-Split files go to ~/.local/share/SeedSplit
+Split files go to ~/.config/SeedSplit
 
-For example: ~/.local/share/SeedSplit/taikurin_hattu.splits
+For example: ~/.config/SeedSplit/taikurin_hattu.splits
 
 One split per line. Example (check the screenshot for reference):
 ```
@@ -37,7 +37,7 @@ Taikuri
 ```
 
 ## Configuration
-You can configure the program by editing a config.ini file located at ~/.local/share/SeedSplit. It's not created automatically, so you will need to create the file if you want to change something.
+You can configure the program by editing a config.ini file located at ~/.config/SeedSplit. It's not created automatically, so you will need to create the file if you want to change something.
 
 Here is an example configuration file:
 ```

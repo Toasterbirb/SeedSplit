@@ -16,6 +16,15 @@ run_seedsplit: seedsplit
 seedsplit.o: ./src/seedsplit.cpp
 	$(CC) -O3 -c -I./include $^ -o seedsplit.o
 
+install:
+	cp -f ./build/SeedSplit /usr/local/bin/SeedSplit
+	mkdir -p /usr/local/share/SeedSplit
+	cp -rf ./build/res /usr/local/share/SeedSplit/
+
+uninstall:
+	rm -f /usr/local/bin/SeedSplit
+	rm -rf /usr/local/share/SeedSplit
+
 clean:
 	rm -rf build
 	rm -f *.o

@@ -27,7 +27,8 @@ std::vector<Split> splits;
 bool splitsEnabled;
 
 /* Configurations */
-std::string fontPath = "./res/fonts/manaspace/manaspc.ttf";
+Birb::ApplicationInfo appInfo("SeedSplit");
+std::string fontPath = appInfo.ResLocation + "/fonts/manaspace/manaspc.ttf";
 int timerSize = 32;
 int splitSize = 20;
 int splitSpacing = 0;
@@ -35,7 +36,7 @@ SDL_Color currentSplitColor = Birb::Colors::Yellow;
 
 int main(int argc, char **argv)
 {
-	datapath = (std::string)getenv("HOME") + "/.local/share/SeedSplit";
+	datapath = (std::string)getenv("HOME") + "/.config/SeedSplit";
 
 	/* Read the configuration file */
 	inipp::Ini<char> ini;
