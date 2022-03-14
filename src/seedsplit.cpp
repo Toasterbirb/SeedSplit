@@ -32,7 +32,7 @@ std::string fontPath = appInfo.ResLocation + "/fonts/manaspace/manaspc.ttf";
 int timerSize = 32;
 int splitSize = 20;
 int splitSpacing = 0;
-SDL_Color currentSplitColor = Birb::Colors::Yellow;
+Birb::Color currentSplitColor = Birb::Colors::Yellow;
 
 int main(int argc, char **argv)
 {
