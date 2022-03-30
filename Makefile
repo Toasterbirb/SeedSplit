@@ -7,8 +7,8 @@ all: seedsplit
 
 seedsplit: seedsplit.o
 	mkdir -p build
-	rsync -av ./res ./build/
-	$(CC) $^ -lbirb2d $(SDL_FLAGS) $(WarningFlags) -o $(outputDir)/SeedSplit
+	cp -av ./res ./build/
+	$(CC) $^ -lbirb2d -static-libgcc -static-libstdc++ $(SDL_FLAGS) $(WarningFlags) -o $(outputDir)/SeedSplit
 
 run_seedsplit: seedsplit
 	cd build ; ./SeedSplit taikurin_hattu
